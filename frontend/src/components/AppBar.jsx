@@ -1,9 +1,13 @@
 // components/AppBar.jsx
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, TouchableHighlight, Text } from 'react-native';
 import Constants from 'expo-constants';
-import { Link } from 'react-router-native';
+import { Link, useNavigate } from 'react-router-native';
 import AppBarTab from './AppBarTab';
+import { ME } from '../graphql/queries';
+import useAuthStorage from '../hooks/useAuthStorage';
+import { useApolloClient } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,18 +23,33 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
+
+  const { data } = useQuery(ME);
+  const authStorage = useAuthStorage();
+  const apolloClient = useApolloClient();
+  const navigate = useNavigate();
+
+  const signOut = async () => {
+    await authStorage.removeAccessToken();
+    await apolloClient.resetStore();
+    navigate('/signin');
+  };
+
   return (
-      <View style={styles.container}>
-          <ScrollView horizontal style={styles.scrollView}>
-              <Link to="/" component={AppBarTab}>
-                  <Text>Repositories</Text>
-              </Link>
-              <Link to="/signin" component={AppBarTab}>
-                  <Text>Sign in</Text>
-              </Link>
-              {/* Add more AppBarTab components here for additional tabs */}
-          </ScrollView>
-      </View>
+    <View style={styles.container}>
+      <Link to="/repositories" component={TouchableHighlight} underlayColor="#24292e">
+        <Text style={styles.tab}>Repositories</Text>
+      </Link>
+      {data?.me ? (
+        <Text style={styles.tab} onPress={signOut}>
+          Sign out
+        </Text>
+      ) : (
+        <Link to="/signin" component={TouchableHighlight} underlayColor="#24292e">
+          <Text style={styles.tab}>Sign in</Text>
+        </Link>
+      )}
+    </View>
   );
 };
 

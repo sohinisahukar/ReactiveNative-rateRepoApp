@@ -4,6 +4,8 @@ import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Text from './Text';
+import useSignIn from '../hooks/useSignIn';
+import { useNavigate } from 'react-router-native';
 
 const styles = StyleSheet.create({
     container: {
@@ -48,8 +50,21 @@ const styles = StyleSheet.create({
   });
 
 const SignIn = () => {
-  const onSubmit = (values) => {
-    console.log(values);
+  const [signIn] = useSignIn();
+  const navigate = useNavigate();
+
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+
+    try {
+      const data = await signIn({ username, password });
+      console.log(data); // This should log the access token
+      if (data && data.authenticate) {
+        navigate('/repositories');
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (

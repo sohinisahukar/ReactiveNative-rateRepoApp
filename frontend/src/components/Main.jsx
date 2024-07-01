@@ -16,13 +16,12 @@ const styles = StyleSheet.create({
 const Main = () => {
   return (
     <NativeRouter>
-      <View style={styles.container}>
         <AppBar />
         <Routes>
           <Route path="/" element={<RepositoryList />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/repositories" element={<RepositoryList />} />
         </Routes>
-      </View>
     </NativeRouter>
   );
 };
