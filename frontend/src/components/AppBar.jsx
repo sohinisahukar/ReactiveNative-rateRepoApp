@@ -32,7 +32,7 @@ const AppBar = () => {
   const signOut = async () => {
     await authStorage.removeAccessToken();
     await apolloClient.resetStore();
-    navigate('/signin');
+    navigate('/');
   };
 
   return (
@@ -41,13 +41,23 @@ const AppBar = () => {
         <Text style={styles.tab}>Repositories</Text>
       </Link>
       {data?.me ? (
-        <Text style={styles.tab} onPress={signOut}>
-          Sign out
-        </Text>
-      ) : (
-        <Link to="/signin" component={TouchableHighlight} underlayColor="#24292e">
-          <Text style={styles.tab}>Sign in</Text>
+        <>
+        <Link to="/create-review" style={styles.tab}>
+          <Text style={styles.text}>Create a review</Text>
         </Link>
+        <Link onPress={signOut} style={styles.tab}>
+          <Text style={styles.text}>Sign out</Text>
+        </Link>
+      </>
+      ) : (
+        <>
+          <Link to="/signin" component={TouchableHighlight} underlayColor="#24292e">
+            <Text style={styles.tab}>Sign in</Text>
+          </Link>
+          <Link to="/signup" component={TouchableHighlight} underlayColor="#24292e">
+            <Text style={styles.tab}>Sign up</Text>
+          </Link>
+        </>
       )}
     </View>
   );
