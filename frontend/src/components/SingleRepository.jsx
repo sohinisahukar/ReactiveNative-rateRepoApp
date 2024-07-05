@@ -18,8 +18,8 @@ const ItemSeparator = () => <View style={styles.separator} />;
 
 const SingleRepository = () => {
   const { id } = useParams();
-  const { data, loading, error } = useQuery(GET_REPOSITORY_REVIEW, {
-    variables: { id },
+  const { data, loading, error, fetchMore } = useQuery(GET_REPOSITORY_REVIEW, {
+    variables: { id, first: 5 },
     fetchPolicy: 'cache-and-network',
   });
 
@@ -33,6 +33,22 @@ const SingleRepository = () => {
 
   const repository = data.repository;
   const reviews = repository.reviews.edges.map(edge => edge.node);
+
+  const handleFetchMore = () => {
+    const canFetchMore = !loading && data?.repository?.reviews.pageInfo.hasNextPage;
+
+    if (!canFetchMore) {
+      return;
+    }
+
+    fetchMore({
+      variables: {
+        id,
+        first: 5,
+        after: data.repository.reviews.pageInfo.endCursor,
+      },
+    });
+  };
 
   return (
     <FlatList
@@ -49,6 +65,8 @@ const SingleRepository = () => {
         </View>
       )}
       ItemSeparatorComponent={ItemSeparator}
+      onEndReached={handleFetchMore}
+      onEndReachedThreshold={0.5}
     />
   );
 };
